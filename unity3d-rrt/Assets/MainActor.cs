@@ -31,8 +31,17 @@ public class MainActor : MonoBehaviour {
 					float X = hit.point.x;
 					float Z = hit.point.z;
 
-					RRTScript RRT = new RRTScript(new Vector3(0.0f,0.5f,0.0f), new Vector3(X,0.5f,Z));
-					RRT.buildRRT();
+					//transform.Translate(Vector3.forward);
+
+					if(Physics.OverlapSphere(new Vector3(X,0.5f,Z), 0.45f).Length == 0)
+					{
+						RRTScript RRT = new RRTScript(new Vector3(0.0f,0.5f,0.0f), new Vector3(X,0.5f,Z));
+						RRT.buildRRT();
+					}
+					else
+					{
+						Debug.Log("Invalid ending point!");
+					}
 
 				}
 			}

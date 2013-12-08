@@ -13,7 +13,7 @@ public class RRTScript{
 
 	public RRTScript(Vector3 start, Vector3 end)
 	{
-		this.graph = new Graph(new Node(start));
+		this.graph = new Graph(new Node(start), new Node(end));
 		this.dest = end;
 	}
 
@@ -34,47 +34,29 @@ public class RRTScript{
 			i++;
 		}
 
+		AStar star = new AStar(graph.startNode);
+		SearchNode result = star.search(graph);
+
+
+		if(result == null)
+		{
+			Debug.Log("Non solution!");
+		}
+		else
+		{
+			star.buildpathfrom(result);
+			Debug.Log("We are done =)!");
+		}
+
 	}
 
 	public void addPoint()
 	{
 		Vector3 randPoint = new Vector3();
-		bool inObj = true;
+		randPoint.x = (float)(rand.NextDouble()*20.0 - 10.0);
+		randPoint.z = (float)(rand.NextDouble()*20.0 - 10.0);
+		randPoint.y = 0.5f;
 
-		while(inObj)
-		{
-			inObj = false;
-			randPoint.x = (float)(rand.NextDouble()*20.0 - 10.0);
-			randPoint.z = (float)(rand.NextDouble()*20.0 - 10.0);
-			randPoint.y = 0.5f;
-
-			//actually we don't need these I think...
-			/*if(Physics.SphereCast(randPoint, 0.1f, new Vector3(0,0,0), 0.0f))
-			{
-				inObj = true;
-				break;
-			}*/
-			/*GameObject[] gameObjects = GameObject.FindGameObjectsWithTag("Untagged");
-
-			foreach(var obj in gameObjects)
-			{
-				if(obj.collider.bounds.Contains(randPoint))
-				{
-					inObj = true;
-					break;
-				}
-			}*/
-
-		}
-
-
-		/*while (Physics.Raycast(randPoint, dest -randPoint , exitDistance))
-		{
-			List<Vector3> path = new List<Vector3>();j
-			path.Add(startPos);
-			path.Add(targetPos);
-			return path;
-		}*/
 
 		double smallestD = 999999.0;
 		double tmpD = 0;
@@ -91,7 +73,9 @@ public class RRTScript{
 			}
 		}
 
-		if(Physics.Raycast(randPoint, chosenNode.point - randPoint, (float)smallestD))
+		Ray randRay = new Ray(chosenNode.point, randPoint - chosenNode.point );
+
+		if(Physics.SphereCast(randRay, 0.45f,(float)smallestD))
 		{
 			return;//not working
 		}
@@ -105,9 +89,8 @@ public class RRTScript{
 			tmp.Scale(new Vector3(scalar,scalar,scalar));
 			newPoint = chosenNode.point + tmp;
 		}
-
+	
 		Debug.DrawLine(newPoint, chosenNode.point, Color.white, 100);
-		//Debug.DrawRay(newPoint, chosenNode.point, Color.white, 100);
 		Debug.Log(newPoint.x + " " + newPoint.y + " " + newPoint.z);
 		Debug.Log(  "D: " + smallestD);
 		Debug.Log(  "ND: " + Vector3.Distance(newPoint, chosenNode.point));
@@ -164,8 +147,14 @@ public class RRTScript{
 			newNode.addNeighbour(smallestNode);
 			this.graph.vertices.Add(newNode);
 			smallestNode.addNeighbour(newNode);
-			Debug.DrawLine(dest, smallestNode.point, Color.white, 100);
-			return true;
+
+			Ray ray = new Ray(smallestNode.point, dest - smallestNode.point);
+
+			if(!Physics.SphereCast(ray, 0.45f,(float)smallestD))
+			{
+				Debug.DrawLine(dest, smallestNode.point, Color.white, 100);
+				return true;
+			}
 		}
 
 		return false;

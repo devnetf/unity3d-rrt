@@ -7,7 +7,7 @@ using System.Collections.Generic;
 public class Node
 {
 	public Vector3 point;
-	private List<Node> neighbours;
+	public List<Node> neighbours;
 
 	public Node()
 	{
@@ -31,16 +31,30 @@ public class Node
 public class Graph{
 
 	public List<Node> vertices;
+	public Node startNode; 
+	public Node Goal;
 
 	public Graph()
 	{
 		this.vertices = new List<Node>();
 	}
 
-	public Graph(Node firstNode)
+	public Graph(Node firstNode, Node endNode)
 	{
 		this.vertices = new List<Node>();
+		this.startNode = firstNode;
+		this.Goal = endNode;
 		this.vertices.Add(firstNode);
 
+	}
+
+	public bool isGoal(Node n)
+	{
+		return n.point.x == this.Goal.point.x && n.point.y == this.Goal.point.y && n.point.z == this.Goal.point.z;
+	}
+
+	public bool isStart(Node n)
+	{
+		return n.point.x == this.startNode.point.x && n.point.y == this.startNode.point.y && n.point.z == this.startNode.point.z;
 	}
 }
