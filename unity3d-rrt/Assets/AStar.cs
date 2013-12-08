@@ -7,11 +7,13 @@ public class AStar
 
 	private SortedList<double, SearchNode> PQ;
 	public IDictionary<Node, SearchNode> VisitedStates;
+	public Stack<SearchNode> Path;
 	
 	public AStar(Node start)
 	{	   
 		PQ = new SortedList<double, SearchNode>();//initialize a priority queue
 		VisitedStates = new Dictionary<Node, SearchNode>();
+		Path = new Stack<SearchNode>();
 		PQ.Add(0.0, new SearchNode(start, 0.0, 0.0, null));
 	}
 	
@@ -67,6 +69,7 @@ public class AStar
 		if(s.came_from != null)
 		{		
 			Debug.DrawLine(s.node.point, s.came_from.node.point, Color.red, 100);
+			Path.Push(s);
 			buildpathfrom(s.came_from);
 		}
 		

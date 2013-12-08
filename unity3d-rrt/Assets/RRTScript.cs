@@ -17,7 +17,7 @@ public class RRTScript{
 		this.dest = end;
 	}
 
-	public void buildRRT()
+	public Stack<SearchNode> buildRRT()
 	{
 		bool isOver = false;
 
@@ -41,12 +41,13 @@ public class RRTScript{
 		if(result == null)
 		{
 			Debug.Log("Non solution!");
+			return null;
 		}
-		else
-		{
-			star.buildpathfrom(result);
-			Debug.Log("We are done =)!");
-		}
+
+		star.buildpathfrom(result);
+		Debug.Log("We are done =)!");
+
+		return star.Path;
 
 	}
 
@@ -55,7 +56,7 @@ public class RRTScript{
 		Vector3 randPoint = new Vector3();
 		randPoint.x = (float)(rand.NextDouble()*20.0 - 10.0);
 		randPoint.z = (float)(rand.NextDouble()*20.0 - 10.0);
-		randPoint.y = 0.5f;
+		randPoint.y = (float)(rand.NextDouble()*5.0);
 
 
 		double smallestD = 999999.0;
@@ -75,10 +76,11 @@ public class RRTScript{
 
 		Ray randRay = new Ray(chosenNode.point, randPoint - chosenNode.point );
 
-		if(Physics.SphereCast(randRay, 0.45f,(float)smallestD))
+		if(Physics.SphereCast(randRay, 0.6f,(float)smallestD) || Physics.Raycast(randRay, (float)smallestD) || Physics.OverlapSphere(randPoint, 0.6f).Length != 0)
 		{
 			return;//not working
 		}
+
 
 		Vector3 newPoint = randPoint;
 
@@ -150,7 +152,7 @@ public class RRTScript{
 
 			Ray ray = new Ray(smallestNode.point, dest - smallestNode.point);
 
-			if(!Physics.SphereCast(ray, 0.45f,(float)smallestD))
+			if(!Physics.SphereCast(ray, 0.6f,(float)smallestD))
 			{
 				Debug.DrawLine(dest, smallestNode.point, Color.white, 100);
 				return true;
